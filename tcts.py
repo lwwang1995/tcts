@@ -221,12 +221,11 @@ def train_epoch(epoch, fore_model, weight_model, fore_optimizer, weight_optimize
     for p in fore_model.parameters():
         p.requires_grad = True
 
+    # fix weight model and train forecasting model
     for _ in range(args.steps):
-        # fix weight model and train forecasting model
         for slc in tqdm(train_loader.iter_batch(), total=train_loader.batch_length):
 
             global_step += 1
-
             feature, label, _ = train_loader.get(slc)
 
             init_pred = init_fore_model(feature)
@@ -321,7 +320,6 @@ def create_loaders(args, device):
     for i in range(1,args.output_dim):
         df['label%d'%(-i)] = df['label0'].groupby(level='instrument').apply(lambda x:x.shift(-i))
 
-    
     df.dropna(subset=['label%d'%(-i) for i in range(args.output_dim)], inplace=True)
 
     # NOTE: we always assume the last column is label
